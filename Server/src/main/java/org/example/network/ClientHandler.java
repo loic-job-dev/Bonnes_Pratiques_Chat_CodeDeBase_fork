@@ -74,7 +74,12 @@ public class ClientHandler implements Runnable {
                             + e.getMessage()
             );
 
-        } finally {
+        } catch (NullPointerException e) {
+            System.out.println(
+                    user.getPseudo() + " a ragequit..."
+            );
+        }
+        finally {
             disconnect();
         }
     }

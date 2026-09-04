@@ -77,11 +77,6 @@ public class SocketClient {
         writer.flush();
     }
 
-    public boolean isConnected() {
-        return socket != null
-                && !socket.isClosed();
-    }
-
     public void disconnect() throws IOException {
 
         if (socket != null && !socket.isClosed()) {
