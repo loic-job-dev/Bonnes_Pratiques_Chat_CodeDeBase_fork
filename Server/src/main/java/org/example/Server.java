@@ -6,126 +6,77 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.List;
-import org.apache.commons.io.IOUtils;
-import com.google.common.collect.Lists;
+import java.util.UUID;
 
-public class Server {
-    private int p;
-    private List<ClientHandler> _clientsList = new ArrayList<>();
-    private ServerSocket ss;
+
+public class Server implements ServerInterface{
+    private final String host;
+    private final int serverPort;
+    private List<ClientHandler> clientHandlerList = new ArrayList<>();
+    private ServerSocket serverSocket;
     private boolean isRunning = false;
-    private List<String> hist = new ArrayList<>();
-    private int count = 0;
+    private List<String> history = new ArrayList<>();
 
-    public Server(int port) {
-        this.p = port;
+    public Server(String host, int port) {
+        this.host = host;
+        this.serverPort = port;
     }
 
     public void start() throws IOException {
-        ss = new ServerSocket();
-        ss.bind(new InetSocketAddress("0.0.0.0", p));
+        serverSocket = new ServerSocket();
+        serverSocket.bind(new InetSocketAddress(host, serverPort));
         isRunning = true;
-        System.out.println("Chat server started on port " + p);
+        System.out.println("Chat server started on port " + serverPort);
 
         while (isRunning) {
-            Socket cs = ss.accept();
-            ClientHandler ch = new ClientHandler(cs, this);
-            _clientsList.add(ch);
-            Thread t = new Thread(ch);
+            Socket socket = serverSocket.accept();
+            ClientHandler clientHandler = new ClientHandler(socket, this);
+            clientHandlerList.add(clientHandler);
+            Thread t = new Thread(clientHandler);
             t.start();
         }
     }
 
     public void stop() throws IOException {
         isRunning = false;
-        if (ss != null && !ss.isClosed()) {
-            ss.close();
+        if (serverSocket != null && !serverSocket.isClosed()) {
+            serverSocket.close();
         }
     }
 
-    // Classe interne pour gérer chaque client
-    class ClientHandler implements Runnable {
-        Socket s;
-        PrintWriter out;
-        String nomUtilisateur;
-        private int clientId;
-
-        public ClientHandler(Socket socket, Server srv) {
-            this.s = socket;
-            this.clientId = count++;
+    @Override
+    public String readHistory() throws IOException {
+        StringBuilder completeHistory = new StringBuilder();
+        for (int i = 0; i < history.size(); i++) {
+            completeHistory.append(history.get(i));
         }
+        return completeHistory.toString();
+    }
 
-        public void run() {
-            try {
-                InputStream in = s.getInputStream();
-                BufferedReader r = new BufferedReader(new InputStreamReader(in));
-                OutputStream outStream = s.getOutputStream();
-                out = new PrintWriter(new OutputStreamWriter(outStream), true);
+    @Override
+    public void writeHistory(String message) throws IOException {
+        history.add(message + " \n");
+        if (history.size() > 100) {
+            history.remove(0);
+        }
+    }
 
-                out.println("Enter your name: ");
-                nomUtilisateur = r.readLine();
-
-                for (int i = 0; i < hist.size(); i++) {
-                    out.println(hist.get(i));
+    @Override
+    public void sendMessage(String message, UUID clientId) {
+        for (int i = 0; i < clientHandlerList.size(); i++) {
+            ClientHandler client = clientHandlerList.get(i);
+            if (client.getClientId() != clientId) {
+                try {
+                    client.out.println(message);
+                } catch (Exception e) {
+                    // client déconnecté ?
                 }
-
-                String m = nomUtilisateur + " has joined the chat.";
-                System.out.println(m);
-                hist.add(m);
-                if (hist.size() > 100) {
-                    hist.remove(0);
-                }
-                for (int i = 0; i < _clientsList.size(); i++) {
-                    ClientHandler c = _clientsList.get(i);
-                    if (c != this && c.nomUtilisateur != null) {
-                        try {
-                            c.out.println(m);
-                        } catch (Exception e) {
-                            // client déconnecté ?
-                        }
-                    }
-                }
-
-                String messageRecu;
-                while ((messageRecu = r.readLine()) != null) {
-                    m = nomUtilisateur + ": " + messageRecu;
-                    System.out.println(m);
-                    hist.add(m);
-                    if (hist.size() > 100) {
-                        hist.remove(0);
-                    }
-                    for (int i = 0; i < _clientsList.size(); i++) {
-                        ClientHandler c = _clientsList.get(i);
-                        if (c != this && c.nomUtilisateur != null) {
-                            try {
-                                c.out.println(m);
-                            } catch (Exception e) {
-                                // client déconnecté ?
-                            }
-                        }
-                    }
-                }
-
-                String msgLeave = nomUtilisateur + " has left the chat.";
-                System.out.println(msgLeave);
-                hist.add(msgLeave);
-                if (hist.size() > 100) {
-                    hist.remove(0);
-                }
-                for (int i = 0; i < _clientsList.size(); i++) {
-                    ClientHandler c = _clientsList.get(i);
-                    if (c != this && c.nomUtilisateur != null) {
-                        try {
-                            c.out.println(msgLeave);
-                        } catch (Exception e) {
-                            // client déconnecté ?
-                        }
-                    }
-                }
-
-            } catch (IOException e) {
-                System.out.println("Client error");
             }
         }
+    }
+
+    @Override
+    public void removeClient(ClientHandler clientHandler) {
+        clientHandlerList.remove(clientHandler);
     }
 }
