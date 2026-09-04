@@ -11,14 +11,14 @@ repositories {
 }
 
 dependencies {
-    implementation("commons-io:commons-io:2.6")
-    implementation("org.apache.commons:commons-lang3:3.9")
-    implementation("com.google.guava:guava:28.0-jre")
-    implementation("org.json:json:20180813")
+    implementation("commons-io:commons-io:2.22.0")
+    implementation("org.apache.commons:commons-lang3:3.20.0")
+    implementation("com.google.guava:guava:33.7.1-jre")
+    implementation("org.json:json:20260814")
     implementation("log4j:log4j:1.2.17")
-    implementation("joda-time:joda-time:2.9.9")
+    implementation("joda-time:joda-time:2.14.3")
 
-    testImplementation(platform("org.junit:junit-bom:5.7.0"))
+    testImplementation(platform("org.junit:junit-bom:6.1.3"))
     testImplementation("org.junit.jupiter:junit-jupiter")
 }
 
