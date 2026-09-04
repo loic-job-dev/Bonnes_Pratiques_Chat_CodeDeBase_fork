@@ -1,17 +1,45 @@
 package org.example;
 
+import org.example.client.ClientService;
+import org.example.model.ClientConfiguration;
+import org.example.network.SocketClient;
+
 import java.io.IOException;
-import java.util.concurrent.ExecutionException;
 
 public class Main {
+
     public static void main(String[] args) {
-        String addr = "localhost";
-        int _Port = 12345;
-        Client c = new Client(addr, _Port);
+
+        String serverAddress = "localhost";
+        int serverPort = 12345;
+
+        ClientConfiguration configuration =
+                new ClientConfiguration(
+                        serverAddress,
+                        serverPort
+                );
+
+        SocketClient socketClient =
+                new SocketClient(configuration);
+
+        ClientService clientService =
+                new ClientService(socketClient);
+
         try {
-            c.Connect();
-        } catch (IOException | InterruptedException | ExecutionException e) {
-            System.out.println("Failed");
+            clientService.start();
+
+        } catch (IOException e) {
+            System.err.println(
+                    "Erreur réseau : "
+                            + e.getMessage()
+            );
+
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+
+            System.err.println(
+                    "Le client a été interrompu."
+            );
         }
     }
 }
