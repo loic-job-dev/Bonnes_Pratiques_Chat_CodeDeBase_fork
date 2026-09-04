@@ -72,7 +72,7 @@ public class ClientService {
 
         } catch (IOException e) {
             System.out.println(
-                    "Disconnected: " + e.getMessage()
+                    "Déconnecté: " + e.getMessage()
             );
         }
     }
@@ -94,17 +94,17 @@ public class ClientService {
 
                     socketClient.send(validatedMessage);
 
-                    System.out.print("You: ");
+                    System.out.print("Toi: ");
 
                 } catch (IllegalArgumentException e) {
                     System.out.println(e.getMessage());
-                    System.out.print("You: ");
+                    System.out.print("Toi: ");
                 }
             }
 
         } catch (IOException e) {
             System.out.println(
-                    "Error while sending message: "
+                    "Erreur pendant l'envoi du message: "
                             + e.getMessage()
             );
         }
@@ -117,7 +117,7 @@ public class ClientService {
         }
 
         System.out.println("\r" + message);
-        System.out.print("You: ");
+        System.out.print("Toi: ");
     }
 
     private void shutdown() throws IOException {

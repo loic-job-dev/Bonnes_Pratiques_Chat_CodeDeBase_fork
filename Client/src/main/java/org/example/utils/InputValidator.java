@@ -21,9 +21,9 @@ public final class InputValidator {
 
         if (trimmedMessage.length() > MAX_MESSAGE_LENGTH) {
             throw new IllegalArgumentException(
-                    "Message too long. Maximum: "
+                    "Message trop long. Maximum: "
                             + MAX_MESSAGE_LENGTH
-                            + " characters."
+                            + " caractères."
             );
         }
 

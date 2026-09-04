@@ -43,7 +43,7 @@ public class SocketClient {
         );
 
         System.out.println(
-                "Connected to "
+                "Connecté à "
                         + configuration.getServerAddress()
                         + ":"
                         + configuration.getServerPort()
