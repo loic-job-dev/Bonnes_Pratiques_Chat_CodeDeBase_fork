@@ -7,6 +7,8 @@ import org.example.model.Message;
 import org.example.model.User;
 import org.example.utils.InputReader;
 import org.example.utils.InputReader.InputTooLongException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.*;
 import java.net.Socket;
@@ -20,6 +22,8 @@ public class ClientHandler implements Runnable {
     private final ClientService clientService;
     private final UUID clientId;
     private final NetworkConfig config;
+    private static final Logger logger =
+            LoggerFactory.getLogger(ClientHandler.class);
 
     private PrintWriter out;
     private InputReader inputReader;
@@ -31,12 +35,14 @@ public class ClientHandler implements Runnable {
             NetworkConfig config
     ) {
         if (socket == null) {
+            logger.error("Le socket ne peut pas être null.");
             throw new IllegalArgumentException(
                     "Le socket ne peut pas être null."
             );
         }
 
         if (clientService == null) {
+            logger.error("Le service client ne peut pas être null.");
             throw new IllegalArgumentException(
                     "Le service client ne peut pas être null."
             );
@@ -64,20 +70,15 @@ public class ClientHandler implements Runnable {
             handleMessages();
 
         } catch (SocketTimeoutException e) {
-            System.out.println(
+            logger.warn(
                     "Client déconnecté pour inactivité."
             );
 
         } catch (IOException e) {
-            System.out.println(
-                    "Erreur I/O avec le client : "
-                            + e.getMessage()
-            );
+            logger.error("Erreur I/O avec le client : {}", e.getMessage());
 
         } catch (NullPointerException e) {
-            System.out.println(
-                    user.getPseudo() + " a ragequit..."
-            );
+            logger.info("{} a ragequit...", user.getPseudo());
         }
         finally {
             disconnect();
@@ -187,7 +188,7 @@ public class ClientHandler implements Runnable {
         out.flush();
 
         if (out.checkError()) {
-            System.out.println(
+            logger.error(
                     "Erreur d'écriture vers le client."
             );
         }
@@ -211,10 +212,7 @@ public class ClientHandler implements Runnable {
                 socket.close();
             }
         } catch (IOException e) {
-            System.out.println(
-                    "Erreur lors de la fermeture : "
-                            + e.getMessage()
-            );
+            logger.error("Erreur lors de la fermeture : {}", e.getMessage());
         }
     }
 
