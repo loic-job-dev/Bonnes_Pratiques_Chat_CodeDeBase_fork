@@ -1,13 +1,16 @@
 package org.example.utils;
 
+import org.example.config.NetworkConfig;
+
 public final class InputValidator {
 
-    private InputValidator() {
+    private final NetworkConfig networkConfig;
+
+    public InputValidator(NetworkConfig networkConfig) {
+        this.networkConfig = networkConfig;
     }
 
-    public static final int MAX_MESSAGE_LENGTH = 500;
-
-    public static String validateMessage(String message) {
+    public String validateMessage(String message) {
 
         if (message == null) {
             return null;
@@ -19,10 +22,10 @@ public final class InputValidator {
             return null;
         }
 
-        if (trimmedMessage.length() > MAX_MESSAGE_LENGTH) {
+        if (trimmedMessage.length() > networkConfig.maxMessageLength()) {
             throw new IllegalArgumentException(
                     "Message trop long. Maximum: "
-                            + MAX_MESSAGE_LENGTH
+                            + networkConfig.maxMessageLength()
                             + " caractères."
             );
         }

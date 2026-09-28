@@ -1,5 +1,6 @@
 package org.example.client;
 
+import org.example.config.NetworkConfig;
 import org.example.network.SocketClient;
 import org.example.utils.InputValidator;
 
@@ -11,13 +12,14 @@ import java.util.concurrent.Future;
 public class ClientService {
 
     private final SocketClient socketClient;
+    private final InputValidator inputValidator;
 
     private final ExecutorService executorService =
             Executors.newFixedThreadPool(2);
 
     private BufferedReader consoleReader;
 
-    public ClientService(SocketClient socketClient) {
+    public ClientService(SocketClient socketClient, InputValidator inputValidator) {
         if (socketClient == null) {
             throw new IllegalArgumentException(
                     "Le client réseau ne peut pas être null."
@@ -25,6 +27,7 @@ public class ClientService {
         }
 
         this.socketClient = socketClient;
+        this.inputValidator = inputValidator;
     }
 
     public void start()
@@ -86,7 +89,7 @@ public class ClientService {
 
                 try {
                     String validatedMessage =
-                            InputValidator.validateMessage(input);
+                            inputValidator.validateMessage(input);
 
                     if (validatedMessage == null) {
                         continue;

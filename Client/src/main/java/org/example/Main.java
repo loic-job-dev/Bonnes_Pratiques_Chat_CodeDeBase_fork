@@ -1,8 +1,11 @@
 package org.example;
 
 import org.example.client.ClientService;
+import org.example.config.AppConfig;
+import org.example.config.NetworkConfig;
 import org.example.model.ClientConfiguration;
 import org.example.network.SocketClient;
+import org.example.utils.InputValidator;
 
 import java.io.IOException;
 
@@ -10,20 +13,21 @@ public class Main {
 
     public static void main(String[] args) {
 
-        String serverAddress = "localhost";
-        int serverPort = 12345;
+        AppConfig appConfig = new AppConfig();
+        NetworkConfig networkConfig = new NetworkConfig(appConfig);
+        InputValidator inputValidator = new InputValidator(networkConfig);
 
         ClientConfiguration configuration =
                 new ClientConfiguration(
-                        serverAddress,
-                        serverPort
+                        appConfig.getServerAddress(),
+                        appConfig.getServerPort()
                 );
 
         SocketClient socketClient =
                 new SocketClient(configuration);
 
         ClientService clientService =
-                new ClientService(socketClient);
+                new ClientService(socketClient, inputValidator);
 
         try {
             clientService.start();
