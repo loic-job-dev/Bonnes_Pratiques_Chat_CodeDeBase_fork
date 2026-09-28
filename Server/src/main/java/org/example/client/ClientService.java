@@ -1,5 +1,6 @@
 package org.example.client;
 
+import org.example.config.NetworkConfig;
 import org.example.model.Message;
 import org.example.model.User;
 import org.example.network.ClientHandler;
@@ -12,17 +13,18 @@ import java.util.UUID;
 
 public class ClientService {
 
-    private static final int MAX_MESSAGE_LENGTH = 250;
-
     private final MessageRepository messageRepository;
     private final ClientManager clientManager;
+    private final NetworkConfig networkConfig;
 
     public ClientService(
             MessageRepository messageRepository,
-            ClientManager clientManager
+            ClientManager clientManager,
+            NetworkConfig networkConfig
     ) {
         this.messageRepository = messageRepository;
         this.clientManager = clientManager;
+        this.networkConfig = networkConfig;
     }
 
     public User createUser(String pseudo, UUID clientId) {
@@ -52,10 +54,10 @@ public class ClientService {
             );
         }
 
-        if (body.length() > MAX_MESSAGE_LENGTH) {
+        if (body.length() > networkConfig.maxMessageLength()) {
             throw new IllegalArgumentException(
                     "Message trop long. Maximum: "
-                            + MAX_MESSAGE_LENGTH
+                            + networkConfig.maxMessageLength()
                             + " caratères."
             );
         }

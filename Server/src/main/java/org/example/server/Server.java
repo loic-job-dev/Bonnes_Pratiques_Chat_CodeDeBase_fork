@@ -17,7 +17,6 @@ public class Server {
     private final int port;
     private final ClientManager clientManager;
     private final MessageRepository messageRepository;
-    private final AppConfig config;
     private final NetworkConfig networkConfig;
 
 
@@ -29,7 +28,6 @@ public class Server {
             int port,
             ClientManager clientManager,
             MessageRepository messageRepository,
-            AppConfig config,
             NetworkConfig networkConfig
     ) {
         if (host == null || host.isBlank()) {
@@ -48,7 +46,6 @@ public class Server {
         this.port = port;
         this.clientManager = clientManager;
         this.messageRepository = messageRepository;
-        this.config = config;
         this.networkConfig = networkConfig;
     }
 
@@ -67,7 +64,8 @@ public class Server {
 
             ClientService clientService = new ClientService(
                     messageRepository,
-                    clientManager
+                    clientManager,
+                    networkConfig
             );
 
             ClientHandler clientHandler = new ClientHandler(

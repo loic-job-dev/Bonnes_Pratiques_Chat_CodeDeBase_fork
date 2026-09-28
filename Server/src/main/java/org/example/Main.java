@@ -15,10 +15,8 @@ public class Main {
         AppConfig appConfig = new AppConfig();
         NetworkConfig networkConfig = new NetworkConfig(appConfig);
 
-        System.out.println(appConfig.getVersion());
-
         MessageRepository messageRepository =
-                new InMemoryMessageRepository();
+                new InMemoryMessageRepository(networkConfig);
 
         ClientManager clientManager =
                 new ClientManager();
@@ -28,7 +26,6 @@ public class Main {
                 appConfig.getServerPort(),
                 clientManager,
                 messageRepository,
-                appConfig,
                 networkConfig
         );
 

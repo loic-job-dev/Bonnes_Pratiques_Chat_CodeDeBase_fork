@@ -1,5 +1,6 @@
 package org.example.repository;
 
+import org.example.config.NetworkConfig;
 import org.example.model.Message;
 
 import java.util.ArrayList;
@@ -8,7 +9,11 @@ import java.util.List;
 
 public class InMemoryMessageRepository implements MessageRepository {
 
-    private static final int MAX_HISTORY_SIZE = 100;
+    private final NetworkConfig networkConfig;
+
+    public InMemoryMessageRepository(NetworkConfig networkConfig) {
+        this.networkConfig = networkConfig;
+    }
 
     private final List<Message> messages =
             Collections.synchronizedList(new ArrayList<>());
@@ -17,7 +22,7 @@ public class InMemoryMessageRepository implements MessageRepository {
     public void save(Message message) {
         messages.add(message);
 
-        if (messages.size() > MAX_HISTORY_SIZE) {
+        if (messages.size() > networkConfig.getMaxHistorySize()) {
             messages.remove(0);
         }
     }
