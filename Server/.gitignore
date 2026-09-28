@@ -1,7 +1,7 @@
 .gradle/
 build/
 out/
-resources/app.properties
+src/main/resources/app.properties
 
 .idea/
 *.iml
