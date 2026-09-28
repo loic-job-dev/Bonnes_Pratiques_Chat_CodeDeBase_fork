@@ -17,14 +17,20 @@ dependencies {
     implementation("org.json:json:20260814")
     implementation("log4j:log4j:1.2.17")
     implementation("joda-time:joda-time:2.14.3")
-
-    testImplementation(platform("org.junit:junit-bom:6.1.3"))
-    testImplementation("org.junit.jupiter:junit-jupiter")
     implementation("ch.qos.logback:logback-classic:1.6.4")
+
+    testImplementation("org.junit.jupiter:junit-jupiter:5.13.4")
+    testImplementation("org.mockito:mockito-junit-jupiter:5.19.0")
+
+    testRuntimeOnly("org.junit.platform:junit-platform-launcher:1.13.4")
 }
 
 tasks.test {
     useJUnitPlatform()
+
+    testLogging {
+        events("passed", "skipped", "failed")
+    }
 }
 
 java {
