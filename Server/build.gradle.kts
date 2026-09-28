@@ -20,6 +20,7 @@ dependencies {
 
     testImplementation(platform("org.junit:junit-bom:6.1.3"))
     testImplementation("org.junit.jupiter:junit-jupiter")
+    implementation("ch.qos.logback:logback-classic:1.6.4")
 }
 
 tasks.test {

@@ -6,12 +6,15 @@ import org.example.repository.MessageRepository;
 import org.example.server.ClientManager;
 import org.example.server.Server;
 import org.example.config.AppConfig;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import java.io.IOException;
 
 public class Main {
 
     public static void main(String[] args) throws IOException {
 
+        Logger logger = LoggerFactory.getLogger(Main.class);
         AppConfig appConfig = new AppConfig();
         NetworkConfig networkConfig = new NetworkConfig(appConfig);
 
@@ -26,23 +29,18 @@ public class Main {
                 appConfig.getServerPort(),
                 clientManager,
                 messageRepository,
-                networkConfig
+                networkConfig,
+                logger
         );
 
         try {
             server.start();
 
         } catch (IOException e) {
-            System.err.println(
-                    "Impossible de démarrer le serveur : "
-                            + e.getMessage()
-            );
+            logger.error("Impossible de démarrer le serveur : ", e);
 
         } catch (RuntimeException e) {
-            System.err.println(
-                    "Erreur inattendue : "
-                            + e.getMessage()
-            );
+            logger.error("Erreur inattendue : ", e);
         }
     }
 }

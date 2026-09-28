@@ -4,7 +4,7 @@ import org.example.client.ClientService;
 import org.example.config.NetworkConfig;
 import org.example.network.ClientHandler;
 import org.example.repository.MessageRepository;
-import org.example.config.AppConfig;
+import org.slf4j.Logger;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
@@ -18,7 +18,7 @@ public class Server {
     private final ClientManager clientManager;
     private final MessageRepository messageRepository;
     private final NetworkConfig networkConfig;
-
+    private final Logger logger;
 
     private ServerSocket serverSocket;
     private boolean running;
@@ -28,7 +28,8 @@ public class Server {
             int port,
             ClientManager clientManager,
             MessageRepository messageRepository,
-            NetworkConfig networkConfig
+            NetworkConfig networkConfig,
+            Logger logger
     ) {
         if (host == null || host.isBlank()) {
             throw new IllegalArgumentException(
@@ -47,6 +48,7 @@ public class Server {
         this.clientManager = clientManager;
         this.messageRepository = messageRepository;
         this.networkConfig = networkConfig;
+        this.logger = logger;
     }
 
     public void start() throws IOException {
@@ -55,9 +57,7 @@ public class Server {
 
         running = true;
 
-        System.out.println(
-                "Serveur démarré sur le port " + port
-        );
+        logger.info("Démarrage du serveur sur le port {}", port);
 
         while (running) {
             Socket socket = serverSocket.accept();
