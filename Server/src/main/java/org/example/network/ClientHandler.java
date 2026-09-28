@@ -2,6 +2,7 @@ package org.example.network;
 
 
 import org.example.client.ClientService;
+import org.example.config.NetworkConfig;
 import org.example.model.Message;
 import org.example.model.User;
 import org.example.utils.InputReader;
@@ -15,13 +16,10 @@ import java.util.UUID;
 
 public class ClientHandler implements Runnable {
 
-    private static final int SOCKET_TIMEOUT = 90_000;
-    private static final int MAX_PSEUDO_LENGTH = 15;
-    private static final int MAX_MESSAGE_LENGTH = 250;
-
     private final Socket socket;
     private final ClientService clientService;
     private final UUID clientId;
+    private final NetworkConfig config;
 
     private PrintWriter out;
     private InputReader inputReader;
@@ -29,7 +27,8 @@ public class ClientHandler implements Runnable {
 
     public ClientHandler(
             Socket socket,
-            ClientService clientService
+            ClientService clientService,
+            NetworkConfig config
     ) {
         if (socket == null) {
             throw new IllegalArgumentException(
@@ -46,6 +45,7 @@ public class ClientHandler implements Runnable {
         this.socket = socket;
         this.clientService = clientService;
         this.clientId = UUID.randomUUID();
+        this.config = config;
     }
 
     @Override
@@ -85,7 +85,7 @@ public class ClientHandler implements Runnable {
     }
 
     private void setupConnection() throws IOException {
-        socket.setSoTimeout(SOCKET_TIMEOUT);
+        socket.setSoTimeout(config.socketTimeout());
 
         BufferedReader reader = new BufferedReader(
                 new InputStreamReader(socket.getInputStream())
@@ -103,8 +103,7 @@ public class ClientHandler implements Runnable {
         send("Entre ton pseudo: ");
 
         try {
-            String pseudo =
-                    inputReader.readLine(MAX_PSEUDO_LENGTH);
+            String pseudo = inputReader.readLine(config.maxPseudoLength());
 
             if (pseudo == null) {
                 return false;
@@ -166,13 +165,12 @@ public class ClientHandler implements Runnable {
     private String readMessage() throws IOException {
         try {
             return inputReader
-                    .readLine(MAX_MESSAGE_LENGTH)
-                    .trim();
+                    .readLine(config.maxMessageLength()).trim();
 
         } catch (InputTooLongException e) {
             send(
                     "Message trop long. Maximum: "
-                            + MAX_MESSAGE_LENGTH
+                            + config.maxMessageLength()
                             + " caractères."
             );
 

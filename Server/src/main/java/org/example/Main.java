@@ -1,18 +1,21 @@
 package org.example;
 
+import org.example.config.NetworkConfig;
 import org.example.repository.InMemoryMessageRepository;
 import org.example.repository.MessageRepository;
 import org.example.server.ClientManager;
 import org.example.server.Server;
-
+import org.example.config.AppConfig;
 import java.io.IOException;
 
 public class Main {
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException {
 
-        String serverHost = "0.0.0.0";
-        int serverPort = 12345;
+        AppConfig appConfig = new AppConfig();
+        NetworkConfig networkConfig = new NetworkConfig(appConfig);
+
+        System.out.println(appConfig.getVersion());
 
         MessageRepository messageRepository =
                 new InMemoryMessageRepository();
@@ -21,10 +24,12 @@ public class Main {
                 new ClientManager();
 
         Server server = new Server(
-                serverHost,
-                serverPort,
+                appConfig.getServerHost(),
+                appConfig.getServerPort(),
                 clientManager,
-                messageRepository
+                messageRepository,
+                appConfig,
+                networkConfig
         );
 
         try {

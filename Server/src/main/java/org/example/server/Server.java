@@ -1,8 +1,10 @@
 package org.example.server;
 
 import org.example.client.ClientService;
+import org.example.config.NetworkConfig;
 import org.example.network.ClientHandler;
 import org.example.repository.MessageRepository;
+import org.example.config.AppConfig;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
@@ -15,6 +17,9 @@ public class Server {
     private final int port;
     private final ClientManager clientManager;
     private final MessageRepository messageRepository;
+    private final AppConfig config;
+    private final NetworkConfig networkConfig;
+
 
     private ServerSocket serverSocket;
     private boolean running;
@@ -23,7 +28,9 @@ public class Server {
             String host,
             int port,
             ClientManager clientManager,
-            MessageRepository messageRepository
+            MessageRepository messageRepository,
+            AppConfig config,
+            NetworkConfig networkConfig
     ) {
         if (host == null || host.isBlank()) {
             throw new IllegalArgumentException(
@@ -41,6 +48,8 @@ public class Server {
         this.port = port;
         this.clientManager = clientManager;
         this.messageRepository = messageRepository;
+        this.config = config;
+        this.networkConfig = networkConfig;
     }
 
     public void start() throws IOException {
@@ -63,7 +72,8 @@ public class Server {
 
             ClientHandler clientHandler = new ClientHandler(
                     socket,
-                    clientService
+                    clientService,
+                    networkConfig
             );
 
             clientManager.add(clientHandler);
